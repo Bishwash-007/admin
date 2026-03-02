@@ -6,13 +6,11 @@ interface InputFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
 
 const InputField: React.FC<InputFieldProps> = ({ name, ...props }) => {
 	return (
-		<div className="relative bg-black p-0.5 transition-all duration-300 hover:p-0">
-			<input
-				name={name}
-				{...props}
-				className="block bg-white text-black font-bold py-4 px-8 transition-transform duration-300 transform -translate-x-1.5 -translate-y-1.5 border-2 border-black focus:outline-none"
-			/>
-		</div>
+		<input
+			name={name}
+			{...props}
+			className="w-full px-6 py-2.5 font-bold text-sm border-2 border-black bg-white shadow-[3px_3px_0_0_#000] focus:shadow-none focus:translate-x-[3px] focus:translate-y-[3px] transition-all duration-150 outline-none placeholder:font-bold placeholder:text-gray-400"
+		/>
 	);
 };
 

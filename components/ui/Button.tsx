@@ -8,23 +8,17 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 const Button: React.FC<ButtonProps> = ({
 	title,
 	icon,
-	onClick,
 	type = 'button',
-	disabled,
 	...rest
 }) => {
 	return (
 		<button
 			type={type}
-			onClick={onClick}
-			disabled={disabled}
-			className="relative bg-black p-0.5 transition-all duration-300 hover:p-0 disabled:opacity-50 disabled:cursor-not-allowed"
+			className="flex items-center justify-center gap-2 px-6 py-2.5 font-bold text-sm border-2 border-black bg-white shadow-[3px_3px_0_0_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:shadow-[3px_3px_0_0_#000] disabled:hover:translate-x-0 disabled:hover:translate-y-0"
 			{...rest}
 		>
-			<span className="block bg-white text-black font-bold py-4 px-8 transition-transform duration-300 transform -translate-x-1.5 -translate-y-1.5 hover:translate-x-0 hover:translate-y-0 border-2 border-black">
-				{icon && <span className="mr-2">{icon}</span>}
-				{title}
-			</span>
+			{icon}
+			{title}
 		</button>
 	);
 };
