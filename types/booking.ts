@@ -81,6 +81,16 @@ export interface BookingSummary {
 	createdAt: string;
 }
 
+/** Richer booking shape returned by admin list endpoint */
+export interface AdminBookingSummary extends BookingSummary {
+	updatedAt?: string;
+	userName?: string;
+	userEmail?: string;
+	userId?: number;
+	movieTitle?: string;
+	showtimeStart?: string;
+}
+
 export interface CreateBookingPayload {
 	showtimeId: number;
 	seatIds: number[];
@@ -119,6 +129,18 @@ export interface BookingsListResponse {
 	bookings: BookingSummary[];
 	page: number;
 	limit: number;
+}
+
+export interface UpdateBookingStatusPayload {
+	bookingStatus: BookingStatus;
+	reason?: string;
+}
+
+export interface UpdateBookingStatusResponse {
+	id: number;
+	bookingNumber: string;
+	bookingStatus: BookingStatus;
+	updatedAt: string;
 }
 
 export interface ReceiptData {

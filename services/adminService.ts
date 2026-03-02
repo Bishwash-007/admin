@@ -18,8 +18,11 @@ import type {
 	Showtime,
 	CreateShowtimePayload,
 	Booking,
+	BookingSummary,
+	BookingStatus,
 	BookingsListParams,
 	BookingsListResponse,
+	UpdateBookingStatusResponse,
 	DiscountCode,
 	CreateDiscountCodePayload,
 } from '../types';
@@ -121,6 +124,21 @@ export const adminBookingService = {
 		const { data } = await api.get<ApiResponse<Booking>>(
 			ENDPOINTS.bookings.detail(id),
 		);
+		return data.data;
+	},
+
+	updateBookingStatus: async (
+		id: number,
+		status: BookingStatus,
+		reason?: string,
+	): Promise<UpdateBookingStatusResponse> => {
+		const { data } = await api.patch<{
+			success: boolean;
+			data: UpdateBookingStatusResponse;
+		}>(ENDPOINTS.admin.bookingDetail(id), {
+			bookingStatus: status,
+			...(reason ? { reason } : {}),
+		});
 		return data.data;
 	},
 };

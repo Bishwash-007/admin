@@ -24,6 +24,8 @@ import type {
 	CreateShowtimePayload,
 	Booking,
 	BookingSummary,
+	AdminBookingSummary,
+	BookingStatus,
 	BookingsListParams,
 	DiscountCode,
 	CreateDiscountCodePayload,
@@ -45,7 +47,7 @@ interface AdminState {
 	adminShowtimes: Showtime[];
 
 	// Bookings
-	allBookings: BookingSummary[];
+	allBookings: AdminBookingSummary[];
 	currentAdminBooking: Booking | null;
 	totalAllBookings: number;
 
@@ -73,6 +75,11 @@ interface AdminState {
 	// Booking actions
 	fetchAllBookings: (params?: BookingsListParams) => Promise<void>;
 	fetchAdminBooking: (id: number) => Promise<void>;
+	updateBookingStatus: (
+		id: number,
+		status: BookingStatus,
+		reason?: string,
+	) => Promise<void>;
 
 	// Discount actions
 	fetchDiscounts: () => Promise<void>;
@@ -81,7 +88,7 @@ interface AdminState {
 	clearError: () => void;
 }
 
-export const useAdminStore = create<AdminState>((set) => ({
+export const useAdminStore = create<AdminState>((set, get) => ({
 	users: [],
 	totalUsers: 0,
 	adminMovies: [],
@@ -112,15 +119,20 @@ export const useAdminStore = create<AdminState>((set) => ({
 	},
 
 	updateUserRole: async (id, payload) => {
-		set({ isLoading: true, error: null });
+		const previous = get().users;
+		// Optimistic update — no isLoading flash
+		set((state) => ({
+			users: state.users.map((u) =>
+				u.id === id ? { ...u, role: payload.role } : u,
+			),
+		}));
 		try {
 			const updated = await adminUserService.updateUserRole(id, payload);
 			set((state) => ({
 				users: state.users.map((u) => (u.id === id ? updated : u)),
-				isLoading: false,
 			}));
 		} catch (err) {
-			set({ error: getErrorMessage(err), isLoading: false });
+			set({ users: previous, error: getErrorMessage(err) });
 			throw err;
 		}
 	},
@@ -235,7 +247,7 @@ export const useAdminStore = create<AdminState>((set) => ({
 		try {
 			const result = await adminBookingService.listBookings(params);
 			set({
-				allBookings: result.bookings as BookingSummary[],
+				allBookings: result.bookings as AdminBookingSummary[],
 				totalAllBookings: result.bookings.length,
 				isLoading: false,
 			});
@@ -251,6 +263,42 @@ export const useAdminStore = create<AdminState>((set) => ({
 			set({ currentAdminBooking: booking, isLoading: false });
 		} catch (err) {
 			set({ error: getErrorMessage(err), isLoading: false });
+		}
+	},
+
+	updateBookingStatus: async (id, status, reason) => {
+		// Capture previous state for rollback
+		const previous = get().allBookings;
+
+		// Optimistic update — no isLoading toggle, no skeleton flash
+		set((state) => ({
+			allBookings: state.allBookings.map((b) =>
+				b.id === id ? { ...b, bookingStatus: status } : b,
+			),
+		}));
+
+		try {
+			const updated = await adminBookingService.updateBookingStatus(
+				id,
+				status,
+				reason,
+			);
+			// Sync with actual server values (e.g. updatedAt)
+			set((state) => ({
+				allBookings: state.allBookings.map((b) =>
+					b.id === id
+						? {
+								...b,
+								bookingStatus: updated.bookingStatus,
+								updatedAt: updated.updatedAt,
+							}
+						: b,
+				),
+			}));
+		} catch (err) {
+			// Revert to previous state on failure
+			set({ allBookings: previous, error: getErrorMessage(err) });
+			throw err;
 		}
 	},
 

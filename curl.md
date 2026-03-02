@@ -982,14 +982,70 @@ curl "http://localhost:5500/api/v1/admin/bookings?page=1&limit=20&status=pending
   -H "Authorization: Bearer <admin_token>"
 ```
 
+**Query Parameters:**
+
+| Param    | Type   | Description                                          |
+| -------- | ------ | ---------------------------------------------------- |
+| `page`   | number | Page number (default: 1)                             |
+| `limit`  | number | Items per page (default: 20, max: 100)               |
+| `status` | string | `pending` \| `confirmed` \| `cancelled` \| `failed` |
+
 **Response `200`:**
 
 ```json
 {
   "status": "success",
-  "data": { "bookings": [ /* booking objects */ ], "page": 1, "limit": 20 }
+  "data": {
+    "bookings": [],
+    "page": 1,
+    "limit": 10
+  }
 }
 ```
+
+---
+
+### Update Booking Status
+
+```bash
+curl -X PATCH http://localhost:5500/api/v1/admin/bookings/1 \
+  -H "Authorization: Bearer <admin_token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "bookingStatus": "confirmed",
+    "reason": "Manually confirmed by admin"
+  }'
+```
+
+**Body**
+
+| Field           | Type   | Required | Description                                          |
+| --------------- | ------ | -------- | ---------------------------------------------------- |
+| `bookingStatus` | string | ✅ Yes   | `pending` \| `confirmed` \| `cancelled` \| `failed` |
+| `reason`        | string | ❌ No    | Audit reason stored in booking history               |
+
+**Response `200`:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "bookingNumber": "BK-1709251200000-ABCD1234",
+    "bookingStatus": "confirmed",
+    "updatedAt": "2026-03-02T10:00:00.000Z"
+  }
+}
+```
+
+**Error cases**
+
+| Status | When                                          |
+| ------ | --------------------------------------------- |
+| `404`  | Booking ID does not exist                     |
+| `400`  | Booking is already in the requested status    |
+| `422`  | `bookingStatus` is missing or an invalid enum |
+| `401`  | Missing or invalid admin token                |
 
 ---
 
@@ -1293,6 +1349,7 @@ All errors follow this shape:
 | `POST`   | `/api/v1/admin/theaters`               | Create theater          |
 | `POST`   | `/api/v1/admin/screens`                | Create screen           |
 | `GET`    | `/api/v1/admin/bookings`               | All bookings            |
+| `PATCH`  | `/api/v1/admin/bookings/:id`           | Update booking status   |
 | `POST`   | `/api/v1/admin/discounts`              | Create discount code    |
 | `GET`    | `/api/v1/admin/reports/overview`       | Dashboard summary       |
 | `GET`    | `/api/v1/admin/reports/revenue`        | Revenue report          |
