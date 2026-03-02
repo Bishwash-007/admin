@@ -10,6 +10,8 @@ import {
 	BarChart2,
 	LogOut,
 	Clapperboard,
+	Users2,
+	Settings2,
 } from 'lucide-react';
 import { useAuthStore, useUiStore } from '@/stores';
 import Button from './ui/Button';
@@ -25,7 +27,9 @@ const NAV_LINKS: NavLink[] = [
 	{ href: '/movies', label: 'Movies', icon: Film },
 	{ href: '/theatres', label: 'Theatres', icon: Building2 },
 	{ href: '/bookings', label: 'Bookings', icon: Clapperboard },
+	{ href: '/users', label: 'Users', icon: Users2 },
 	{ href: '/reports', label: 'Reports', icon: BarChart2 },
+	{ href: '/settings', label: 'Settings', icon: Settings2 },
 ];
 
 const Navbar = () => {
@@ -41,11 +45,11 @@ const Navbar = () => {
 	};
 
 	return (
-		<nav className="flex flex-col w-60 min-h-screen border-r-2 border-black shrink-0">
+		<nav className="flex flex-col w-60 min-h-screen bg-black text-white shrink-0 px-4">
 			{/* Brand */}
-			<div className="flex items-center gap-2 px-6 py-5 border-b-2 border-black">
+			<div className="flex flex-col items-center gap-2 px-6 py-5 border-b-2 border-white/60">
 				<Clapperboard size={22} strokeWidth={2.5} />
-				<span className="text-lg font-black tracking-tight">Cinema Admin</span>
+				<span className="text-3xl font-black tracking-tight">CinemaGhar</span>
 			</div>
 
 			{/* Links */}
@@ -59,8 +63,8 @@ const Navbar = () => {
 								className={`flex items-center gap-3 px-4 py-3 font-bold text-sm border-2 transition-all duration-150
 									${
 										active
-											? 'bg-black text-white border-black'
-											: 'bg-white text-black border-transparent hover:border-black hover:shadow-[2px_2px_0_0_#000]'
+											? 'bg-white text-black border-white'
+											: 'bg-black text-white border-transparent hover:border-white/60 hover:bg-white/10'
 									}`}
 							>
 								<Icon size={17} strokeWidth={2.5} />
@@ -72,17 +76,23 @@ const Navbar = () => {
 			</ul>
 
 			{/* User + Logout */}
-			<div className="border-t-2 border-black p-4 flex flex-col gap-3">
+			<div className="border-t-2 border-white/20 p-4 flex flex-col gap-3">
 				{user && (
-					<div className="px-2">
-						<p className="text-xs font-black uppercase tracking-widest text-gray-500">
-							Signed in as
-						</p>
-						<p className="text-sm font-bold truncate">{user.name}</p>
-						<p className="text-xs text-gray-500 truncate">{user.email}</p>
+					<div className="flex items-center gap-3">
+						<div className="w-9 h-9 rounded-full bg-white shrink-0 flex items-center justify-center text-black text-sm font-black">
+							{user.name.charAt(0).toUpperCase()}
+							{user.name.split(' ').length > 1
+								? user.name.split(' ')[1].charAt(0).toUpperCase()
+								: ''}
+						</div>
+						<div>
+							<p className="text-sm font-bold truncate">{user.name}</p>
+							<p className="text-xs text-white/50 truncate">{user.email}</p>
+						</div>
 					</div>
 				)}
 				<Button
+					variant="dark"
 					title="Log Out"
 					onClick={handleLogout}
 					icon={<LogOut size={17} strokeWidth={2.5} />}

@@ -1,15 +1,15 @@
 import PageHeader from '@/components/PageHeader';
 import React from 'react';
 
-const Report = () => {
+const Settings = () => {
 	return (
 		<div className="flex-1 p-8">
 			<PageHeader
-				title="Reports"
-				subtitle="Analyse bookings, revenue and performance"
+				title="Settings"
+				subtitle="Manage your application settings"
 			/>
 		</div>
 	);
 };
 
-export default Report;
+export default Settings;
