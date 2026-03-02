@@ -1,9 +1,14 @@
-export default function Home() {
-	return (
-		<main>
-			<h1 className="text-4xl font-bold text-center mt-10">
-				Welcome to My Next.js App!
-			</h1>
-		</main>
-	);
-}
+'use client';
+import { useAuthStore } from '@/stores';
+import { useRouter } from 'next/navigation';
+
+const Index = () => {
+	const router = useRouter();
+	const { isAuthenticated } = useAuthStore();
+	if (!isAuthenticated) {
+		return router.push('/login');
+	}
+	return router.push('/home');
+};
+
+export default Index;

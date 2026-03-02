@@ -7,7 +7,6 @@ export const BASE_URL =
 export const api = axios.create({
 	baseURL: BASE_URL,
 	headers: { 'Content-Type': 'application/json' },
-	withCredentials: true,
 	timeout: 15_000,
 });
 
