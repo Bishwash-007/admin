@@ -32,6 +32,7 @@ interface MovieState {
 	) => Promise<void>;
 	fetchTheaters: () => Promise<void>;
 	fetchScreenSeats: (screenId: number) => Promise<void>;
+	fetchScreens: (theaterId: number) => Promise<void>;
 	clearCurrentMovie: () => void;
 	clearError: () => void;
 }
@@ -108,6 +109,16 @@ export const useMovieStore = create<MovieState>((set) => ({
 		try {
 			const seats = await movieService.getScreenSeats(screenId);
 			set({ seats, isLoading: false });
+		} catch (err) {
+			set({ error: getErrorMessage(err), isLoading: false });
+		}
+	},
+
+	fetchScreens: async (theaterId) => {
+		set({ isLoading: true, error: null });
+		try {
+			const result = await movieService.listScreens(theaterId);
+			set({ isLoading: false });
 		} catch (err) {
 			set({ error: getErrorMessage(err), isLoading: false });
 		}

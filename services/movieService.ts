@@ -55,9 +55,10 @@ export const movieService = {
 		return data.data;
 	},
 
-	listScreens: async (): Promise<Screen[]> => {
+	listScreens: async (theaterId?: number): Promise<Screen[]> => {
 		const { data } = await api.get<ApiResponse<Screen[]>>(
 			ENDPOINTS.movies.screens,
+			{ params: theaterId ? { theaterId } : undefined },
 		);
 		return data.data;
 	},

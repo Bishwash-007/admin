@@ -25,6 +25,8 @@ interface AuthState {
 	changePassword: (payload: ChangePasswordPayload) => Promise<void>;
 	loadMe: () => Promise<void>;
 	clearError: () => void;
+	_hasHydrated: boolean;
+	setHasHydrated: (state: boolean) => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -35,6 +37,8 @@ export const useAuthStore = create<AuthState>()(
 			isAuthenticated: false,
 			isLoading: false,
 			error: null,
+			_hasHydrated: false,
+			setHasHydrated: (state) => set({ _hasHydrated: state }),
 
 			login: async (payload) => {
 				set({ isLoading: true, error: null });
@@ -111,7 +115,14 @@ export const useAuthStore = create<AuthState>()(
 		}),
 		{
 			name: 'cinema_auth',
-			partialize: (state) => ({ token: state.token, user: state.user }),
+			partialize: (state) => ({
+				token: state.token,
+				user: state.user,
+				isAuthenticated: state.isAuthenticated,
+			}),
+			onRehydrateStorage: () => (state) => {
+				state?.setHasHydrated(true);
+			},
 		},
 	),
 );

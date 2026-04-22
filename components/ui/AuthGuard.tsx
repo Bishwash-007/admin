@@ -6,19 +6,19 @@ import { useAuthStore } from '@/stores';
 
 const AuthGuard = ({ children }: { children: React.ReactNode }) => {
 	const router = useRouter();
-	const { isAuthenticated, user } = useAuthStore();
+	const { isAuthenticated, user, _hasHydrated } = useAuthStore();
 
 	useEffect(() => {
-		if (!isAuthenticated) {
-			router.replace('/login');
-			return;
+		if (_hasHydrated) {
+			if (!isAuthenticated || user?.role !== 'admin') {
+				router.replace('/login');
+			}
 		}
-		if (user?.role !== 'admin') {
-			router.replace('/login');
-		}
-	}, [isAuthenticated, user, router]);
+	}, [isAuthenticated, user, router, _hasHydrated]);
 
 	// Don't render anything until we confirm admin
+	if (!_hasHydrated) return null;
+
 	if (!isAuthenticated || user?.role !== 'admin') return null;
 
 	return <>{children}</>;

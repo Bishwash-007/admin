@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation';
 
 const Login = () => {
 	const router = useRouter();
-	const { login, isLoading, clearError } = useAuthStore();
+	const { login, isLoading, clearError, loadMe } = useAuthStore();
 	const { showToast } = useUiStore();
 
 	const handleLogin = async (formData: FormData) => {
@@ -18,6 +18,7 @@ const Login = () => {
 		const password = formData.get('password') as string;
 		try {
 			await login({ email, password });
+			await loadMe();
 			showToast('Logged in successfully', 'success');
 			router.push('/home');
 		} catch (err) {
